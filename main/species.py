@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 
 
 class Specie:
@@ -25,9 +26,37 @@ class Specie:
         self.shape = target_image.shape
         self.genes = genes
         self.mutation_rate = mutation_rate
-        self.genotype = np.random.rand(genes,5)
+        self.genotype = np.random.rand(genes, 5)
 
-        #initial value a placeholder/ blank black canvas
+        # initial value a placeholder/ blank black canvas
         self.phenotype = np.zeros(target_image.shape)
-        
 
+    def gen_phenotype(self):
+        """ Creates an image using the genotype and overwrites self.phenotype
+
+        Returns:
+            np.ndarray of the trained image
+        """
+
+        # clear any previous image
+        self.phenotype.fill(0)
+
+        # circle of max radius should be able to cover up image
+        max_radius = self.shape[1] / \
+            2 if self.shape[1] > self.shape[0] else self.shape[0] / 2
+
+        for gene in self.genotype:
+            overlay = self.phenotype.copy()
+            color = (int(gene[3] * 255),)
+            cv2.circle(
+                overlay,
+                center=(int(gene[1] * self.shape[1]),
+                        int(gene[0]*self.shape[0])),
+                radius=int(gene[2] * max_radius),
+                color=color,
+                thickness=-1
+
+            )
+
+            alpha = gene[-1]
+            self.phenotype = cv2.addWeighted(overlay, alpha, self.phenotype, 1 - alpha, 0)
