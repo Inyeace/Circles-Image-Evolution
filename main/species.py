@@ -30,20 +30,19 @@ class Specie:
 
         # initial value a placeholder/ blank black canvas
         self.phenotype = np.zeros(target_image.shape)
+        self.fitness = 0
+
+        self.average_radius = (self.shape[1] + self.shape[0])/2 / 6
+
+        self.max_error = (np.square((1 - (self.target_image >= 127))
+                                    * 255 - self.target_image)).mean(axis=None)
 
     def gen_phenotype(self):
         """ Creates an image using the genotype and overwrites self.phenotype
-
-        Returns:
-            np.ndarray of the trained image
         """
 
         # clear any previous image
         self.phenotype.fill(0)
-
-        # circle of max radius should be able to cover up image
-        max_radius = self.shape[1] / \
-            2 if self.shape[1] > self.shape[0] else self.shape[0] / 2
 
         for gene in self.genotype:
             overlay = self.phenotype.copy()
@@ -52,11 +51,19 @@ class Specie:
                 overlay,
                 center=(int(gene[1] * self.shape[1]),
                         int(gene[0]*self.shape[0])),
-                radius=int(gene[2] * max_radius),
+                radius=int(gene[2] * self.average_radius),
                 color=color,
                 thickness=-1
 
             )
 
             alpha = gene[-1]
-            self.phenotype = cv2.addWeighted(overlay, alpha, self.phenotype, 1 - alpha, 0)
+            self.phenotype = cv2.addWeighted(
+                overlay, alpha, self.phenotype, 1 - alpha, 0).astype(int)
+
+    def score(self):
+        """ Sets the fitness score of the specie based on current phenotype.
+        Scored based on Mean Squared Error"""
+        cost = int(np.mean(np.square(self.target_image - self.phenotype)))
+        self.fitness = (self.max_error - cost) / self.max_error
+        

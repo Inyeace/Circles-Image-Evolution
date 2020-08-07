@@ -23,7 +23,7 @@ def load_target_image(image_path, relative=True):
         raise FileNotFoundError(f'Image not found at path: {image_path}')
 
     target = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    return target / 255
+    return target 
 
 
 def show_image(img_arr):
