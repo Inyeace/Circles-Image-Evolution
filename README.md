@@ -1,5 +1,4 @@
-```html
-<h1>Circles Image Evolution</h1>
-<p>Create Images with Circles using Genetic Algorithm</p>
+# Circles Image Evolution
+Create Images with Circles using Genetic Algorithm
 
-```
+![Mona Lisa Original](evolving_circles/input/Mona Lisa.jpg)
