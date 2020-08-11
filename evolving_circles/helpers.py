@@ -1,9 +1,8 @@
 import os
 import cv2
-from matplotlib import pyplot as plt
+import numpy as np
 
-
-def load_target_image(image_path, relative=True):
+def load_target_image(image_path: str,size = None) -> np.ndarray:
     """ Loads image from path, converts it to greyscale 
 
     Args:
@@ -15,25 +14,24 @@ def load_target_image(image_path, relative=True):
         FileNotFoundError: image_path does not exist.
     """
     
-    if relative:
-        image_path = os.path.dirname(
-            os.path.abspath(__file__)) + f'\input\{image_path}'
+    
+    image_path = os.path.dirname(
+        os.path.abspath(__file__)) + f'\input\{image_path}'
 
     if not os.path.exists(image_path):
         raise FileNotFoundError(f'Image not found at path: {image_path}')
 
     target = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+
+    if size:
+        target = cv2.resize(src=target, dsize=size,interpolation=cv2.INTER_AREA)
     return target 
 
+def save_image(img_name: str,img_arr: np.ndarray) -> bool:
+    image_path = os.path.dirname(
+        os.path.abspath(__file__)) + f'\output\{img_name}.jpg'
+    return cv2.imwrite(image_path,img_arr)
 
-def show_image(img_arr):
-    """ Displays image on window
-    Arguments:
-        img_arr (numpy.ndarray): image array to be displayed
-    """
-    plt.figure()
-    plt.axis("off")
-    plt.imshow(img_arr, cmap="gray")
-    plt.show()
+
 
 
